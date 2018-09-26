@@ -15,3 +15,14 @@ while [ ${!v} ]; do
         let "n+=1"
         v=aa$n
 done
+
+#!/bin/bash
+
+aa1=aaa
+aa2=bbb
+aa3=ccc
+
+for i in `seq 1 10`; do
+	x=aa$i
+	echo ${!x}
+done
