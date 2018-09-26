@@ -1,0 +1,16 @@
+nomedestin1="195.154.32.64"               # Nome do host 1 (para exibição e nome de arquivos csv)
+enderedest1="195.154.32.64"               # Endereço do host 1 (para o ping)
+arquivdest1="http://195.154.32.64/10.mb"  # Caminho do arquivo 1 (para o wget)
+
+nomedestin2="62.210.6.33"
+enderedest2="62.210.6.33"                 # Idem p/ o host 2
+arquivdest2="http://62.210.6.33/10.mb"
+
+pausa=5
+n=2
+for i in `seq 1 $n`; do
+        eval nomedest='$'nomedestin$i
+        eval endere='$'enderedest$i
+        echo "ping-svc $nomedest $endere"
+        [ $i -lt $n ] && sleep $pausa
+done
