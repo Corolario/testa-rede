@@ -11,10 +11,9 @@ nomehost3="212.83.168.74"
 endereht3="212.83.168.74"               # Idem p/ o host 3
 arquivht3="http://212.83.168.74/10.mb"
 
-interv=120	# Intervalo entre pings
-numping=10	# Número de pings
+#interv=2	# Intervalo entre pings
+#numping=4	# Número de pings
 
-# caminho=$(dirname "$0")
 caminho=$(pwd)
 data_inic=`date +%Y-%m-%d`
 
@@ -74,7 +73,7 @@ wgetcsv3=$caminho"/"$data_inic"_"$nomehost3"_wget.csv"
 wgetpng=$caminho"/"$data_inic"_wget.png"
 plot-wget (){
 iniciorange=$(head -c 3 $wgetcsv1)00
-fimrange=$(date +%H:%M)
+fimrange=$(date +%H:)59
 gnuplot <<EOF
         set title "$data_inic - Velociade de download ao longo do dia (Origem: São Paulo - Speedy Fibra 50Mb)"
         set xlabel "Horario"
@@ -85,9 +84,8 @@ gnuplot <<EOF
         #set xtics "01:00"
         set grid
         set ylabel "Velocidade ( KB/s )"
-        #set log y
-        set yrange [50:2200]
-        set ytics 100
+        #set yrange [50:2200]
+        #set ytics 100
         set terminal pngcairo size 1300,580
         set output "$wgetpng"
         set multiplot
@@ -102,18 +100,19 @@ pingcsv3=$caminho"/"$data_inic"_"$nomehost3"_ping.csv"
 pingpng=$caminho"/"$data_inic"_ping.png"
 plot-ping () {
 iniciorange=$(head -n 1 $pingcsv1 | cut -d" " -f 3 | head -c 3)00
-fimrange=$(date +%H:%M)
+fimrange=$(date +%H:)59
 gnuplot <<EOF
-        set title "$hj_titulo - Ping ao longo do dia (Origem: São Paulo - Speedy Fibra 50Mb)"
+        set title "$data_inic - Ping ao longo do dia (Origem: São Paulo - Speedy Fibra 50Mb)"
         set xlabel "Horario"
         set xdata time
         set timefmt "%H:%M:%S"
         set format x "%H:%M"
         set xrange ["$iniciorange":"$fimrange"]
+        #set xtics "01:00"
         set grid
         set ylabel "Tempo (ms)"
-        set yrange [200:500]
-        set ytics 20
+        #set yrange [200:500]
+        #set ytics 20
         set terminal pngcairo size 1580,580
         set output "$pingpng"
         set multiplot
@@ -122,42 +121,42 @@ gnuplot <<EOF
 EOF
 }
 
-# csv-wget $arquivht1 $nomehost1
-# sleep 1
-# csv-wget $arquivht2 $nomehost2
-# sleep 1
+pinga-todos () {
+	numdest=2
+	wgetsphora=21
+	dorme=5
+	interv=$(echo "$numdest*$dorme" | bc)
+	numping=$(echo "3600/$numdest/$wgetsphora/$dorme" | bc)
 
-# csv-ping $endereht1 $nomehost1 &
-# sleep 1
-# csv-ping $endereht2 $nomehost2
-# sleep 1
+    csv-ping $endereht1 $nomehost1 &
+    sleep $dorme
+    csv-ping $endereht2 $nomehost2
+    
+    csv-wget $arquivht2 $nomehost2
+    sleep 1
+    csv-wget $arquivht1 $nomehost1
+}
 
-# csv-wget $arquivht2 $nomehost2
-# sleep 1
-# csv-wget $arquivht1 $nomehost1
+#while [[ "$data_inic" == "`date +%Y-%m-%d`" ]]; do
+        # csv-wget $arquivht1 $nomehost1
+        # sleep 1
+        # csv-wget $arquivht2 $nomehost2
+        # sleep 1
+        # csv-ping $endereht1 $nomehost1 &
+        # sleep 60 # metade de interv
+        # csv-ping $endereht2 $nomehost2
+        # sleep 1
 
-# plot-wget
-# plot-ping
-
-while [[ "$data_inic" == "`date +%Y-%m-%d`" ]]; do
-        csv-wget $arquivht1 $nomehost1
-        sleep 1
-        csv-wget $arquivht2 $nomehost2
-        sleep 1
-        csv-ping $endereht1 $nomehost1 &
-        sleep 60 # metade de interv
-        csv-ping $endereht2 $nomehost2
-        sleep 1
-
-        csv-wget $arquivht2 $nomehost2
-        sleep 1
-        csv-wget $arquivht1 $nomehost1
-        sleep 1
-        csv-ping $endereht2 $nomehost2 &
-        sleep 60 # metade de interv
-        csv-ping $endereht1 $nomehost1
-        sleep 1
-
+        # csv-wget $arquivht2 $nomehost2
+        # sleep 1
+        # csv-wget $arquivht1 $nomehost1
+        # sleep 1
+        # csv-ping $endereht2 $nomehost2 &
+        # sleep 60 # metade de interv
+        # csv-ping $endereht1 $nomehost1
+        # sleep 1
+	pinga-todos
+     
         plot-wget
-		plot-ping
-done
+	plot-ping
+#done
