@@ -14,3 +14,44 @@ for i in `seq 1 $n`; do
         echo "ping-svc $nomedest $endere"
         [ $i -lt $n ] && sleep $pausa
 done
+
+==================================
+
+#!/bin/bash
+aa1="dfg"
+aa2="94dfg"
+aa3=""
+
+n=1
+v=aa$n
+
+while [ ${!v} ]; do
+        echo $v " -> " ${!v}
+        let "n+=1"
+        v=aa$n
+done
+
+#!/bin/bash
+aa1=aaa
+aa2=bbb
+aa3=ccc
+
+for i in `seq 1 10`; do
+	x=aa$i
+	echo ${!x}
+done
+
+=========================================
+aa1="aaa"
+aa2=""
+aa3=""
+
+n=1
+eval v='$'aa$n
+
+while [ $v ]; do
+        echo $v
+        let "n+=1"
+        eval v='$'aa$n
+done
+echo $n-1 |bc
